@@ -2,14 +2,23 @@ cmake_minimum_required(VERSION 3.28)
 project(TestProj)
 
 set(CMAKE_CXX_STANDARD 17)
-#set(OPENCV_SAMPLES_DATA_PATH "${PROJECT_SOURCE_DIR}/media") # doesn't seem to work
 
-find_package( OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
-message("${OpenCV_INCLUDE_DIRS}")
+# Linking boost (for GTSAM)
+find_package(Boost 1.65.0 REQUIRED system filesystem serialization REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+
+# Adding path to Eigen to includes (for GTSAM)
+include_directories(/usr/local/include/gtsam/3rdparty/)
+include_directories(/usr/local/include/gtsam/3rdparty/Eigen)
+
+
+find_package(GTSAM REQUIRED)
+find_package(OpenCV REQUIRED)
 find_package(depthai CONFIG REQUIRED)
 
-#add_executable(TestProj main.cpp)
+include_directories(${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${GTSAM_INCLUDE_DIR})
+
+
 add_executable(TestProj main.cpp)
 
 # Download the rerun_sdk
@@ -22,4 +31,6 @@ set_property(TARGET TestProj PROPERTY CXX_STANDARD 17)
 
 target_compile_definitions(TestProj PUBLIC SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 
-target_link_libraries(TestProj PRIVATE ${OpenCV_LIBS} depthai::opencv rerun_sdk)
+target_link_libraries(TestProj PRIVATE
+        ${OpenCV_LIBS} depthai::opencv rerun_sdk ${Boost_LIBRARIES} metis-gtsam gtsam gtsam_unstable
+)

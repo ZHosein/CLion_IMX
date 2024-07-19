@@ -1,14 +1,18 @@
-#include "11.openCV_rerun_poseImage.cpp"
+#include <iostream>
+// #include "11.openCV_rerun_poseImage.cpp"
 // #include "8.oakDCapture.cpp"
 // #include "5.depthAITutorial_GetIntrinsics.cpp"
 // #include "12.poseImage_forEVK.cpp"
+#include "12.gtsamTests.cpp"
 
 int main() {
     // captureImage_FullResolution();
     // save_jpg();
     // printCameraIntrinsics();
-    logImagePoseRerun();
+    // logImagePoseRerun();
     // dispImagePose();
+    test();
+
     std::cout << "Hello World";
     return 0;
 }
