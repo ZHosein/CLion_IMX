@@ -44,7 +44,7 @@ void printCameraIntrinsics() {
     std::cout << coeffString;
 
 
-    /*
+
     // other intrinsics/extrinsics data including for different "resolutions" (widths and heights)
     std::cout << "Stereo baseline distance: " << calibData.getBaselineDistance() << " cm" << std::endl;
 
@@ -52,19 +52,19 @@ void printCameraIntrinsics() {
          << ", calculated FOV: " << calibData.getFov(dai::CameraBoardSocket::CAM_B, false) << std::endl;
 
     std::cout << "Intrinsics from getCameraIntrinsics function full resolution:" << std::endl;
-    intrinsics = calibData.getCameraIntrinsics(dai::CameraBoardSocket::CAM_C);
+    intrinsics = calibData.getCameraIntrinsics(dai::CameraBoardSocket::CAM_A);
     printMatrix(intrinsics);
 
     std::cout << "Intrinsics from getCameraIntrinsics function 1280 x 720:" << std::endl;
-    intrinsics = calibData.getCameraIntrinsics(dai::CameraBoardSocket::CAM_C, 1280, 720);
+    intrinsics = calibData.getCameraIntrinsics(dai::CameraBoardSocket::CAM_A, 1280, 720);
     printMatrix(intrinsics);
 
     std::cout << "Intrinsics from getCameraIntrinsics function 720 x 450:" << std::endl;
-    intrinsics = calibData.getCameraIntrinsics(dai::CameraBoardSocket::CAM_C, 720);
+    intrinsics = calibData.getCameraIntrinsics(dai::CameraBoardSocket::CAM_A, 720);
     printMatrix(intrinsics);
 
     std::cout << "Intrinsics from getCameraIntrinsics function 600 x 1280:" << std::endl;
-    intrinsics = calibData.getCameraIntrinsics(dai::CameraBoardSocket::CAM_C, 600, 1280);
+    intrinsics = calibData.getCameraIntrinsics(dai::CameraBoardSocket::CAM_A, 600, 1280);
     printMatrix(intrinsics);
 
     std::vector<std::vector<float>> extrinsics;
@@ -88,7 +88,7 @@ void printCameraIntrinsics() {
     std::cout << "Extrinsics from left->rgb test:" << std::endl;
     extrinsics = calibData.getCameraExtrinsics(dai::CameraBoardSocket::CAM_B, dai::CameraBoardSocket::CAM_A);
     printMatrix(extrinsics);
-    */
+
 
 
 }

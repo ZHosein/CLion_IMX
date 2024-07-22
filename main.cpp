@@ -3,15 +3,18 @@
 // #include "8.oakDCapture.cpp"
 // #include "5.depthAITutorial_GetIntrinsics.cpp"
 // #include "12.poseImage_forEVK.cpp"
-#include "12.gtsamTests.cpp"
+// #include "12.gtsamTests.cpp"
+
+#include "13.OAKD_save_vid.cpp"
+// #include "5.depthAITutorial_GetIntrinsics.cpp"
+// #include "14.daiOAKDRGBCameraControl.cpp"
+
+// #include "11.openCV_rerun_poseImage.cpp"
 
 int main() {
-    // captureImage_FullResolution();
-    // save_jpg();
-    // printCameraIntrinsics();
     // logImagePoseRerun();
-    // dispImagePose();
-    test();
+    captureVid(720);
+    // printCameraIntrinsics();
 
     std::cout << "Hello World";
     return 0;
