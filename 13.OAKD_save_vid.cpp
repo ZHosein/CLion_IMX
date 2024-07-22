@@ -30,10 +30,8 @@ void captureVid(int height) {
     // Define source and outputs
     const auto colorNode = pipeline.create<dai::node::ColorCamera>();
     const auto xOut = pipeline.create<dai::node::XLinkOut>();
-    const auto prevOut = pipeline.create<dai::node::XLinkOut>();
 
     xOut->setStreamName("colorOut");
-    prevOut->setStreamName("prevOut");
 
     // Properties
     colorNode->setBoardSocket(dai::CameraBoardSocket::CAM_A); // not strictly necessary to specify, would have automatically been chosen by device since there is only one color camera
@@ -43,14 +41,12 @@ void captureVid(int height) {
 
     // Linking
     colorNode->video.link(xOut->input);
-    colorNode->preview.link(prevOut->input);
 
     // Connect to device and start pipeline
     dai::Device device(pipeline);
 
     // Queues
     auto colorQueue = device.getOutputQueue("colorOut");
-    auto prevQueue = device.getOutputQueue("prevOut");
     // auto colorQueue = device.getOutputQueue("colorOut", 1);
 
 
@@ -91,7 +87,7 @@ void captureVid(int height) {
         // std::cout << cvFrame.cols << " " << cvFrame.rows;
         cv::Mat resizedFrame;
         cv::resize(cvFrame, resizedFrame, cv::Size(), scaleFactor, scaleFactor);
-        cv::imshow("Video Feed", prevQueue->get<dai::ImgFrame>()->getCvFrame());
+        cv::imshow("Video Feed", resizedFrame);
 
         if (const auto key = cv::waitKey(1); key == 27) return;
     }
