@@ -20,12 +20,12 @@ void printMatrix(const std::vector<std::vector<float>>& matrix) {
 }
 
 /**
- * Saves video feed from connected OAK-D device to driectory of .png's scaled to specified resolution
+ * @brief Saves video feed from connected OAK-D device to driectory of .png's scaled to specified resolution
  * @param height: height to scale image to, scaling factor calculatd and applied to width
- * @param dir: directory in which to store images
  * @param tagFamily: DICT_APRILTAG_36h11 | DICT_APRILTAG_16h5 | DICT_4X4_50 (tag families used during testing)
+ * @param dir: directory in which to store images
  */
-void captureVid(int height, std::string tagFamily) {
+void captureVid(int height, const std::string& tagFamily, std::string dir) {
     // Create pipeline
     dai::Pipeline pipeline;
 
@@ -48,38 +48,30 @@ void captureVid(int height, std::string tagFamily) {
     dai::Device device(pipeline);
 
     // Queues
-    auto colorQueue = device.getOutputQueue("colorOut");
-    // auto colorQueue = device.getOutputQueue("colorOut", 1);
+    auto colorQueue = device.getOutputQueue("colorOut"); // set a queue limit? non-blocking?
 
 
-    // stdout Outputs
-    std::cout << "Camera: " <<  colorNode->getName() << std::endl;
-    std::cout << "Current Resolution: " << colorNode->getResolutionWidth() << "x" << colorNode->getResolutionHeight() << std::endl;
-    std::cout << "Fps: " << colorNode->getFps() << std::endl;
-
+    // Accesing/calc camera/recording properties
     auto calibration_data = device.readCalibration();
     auto [defaultIntrinsics, calibWidth, calibHeight] = calibration_data.getDefaultIntrinsics(dai::CameraBoardSocket::CAM_A);
-    std::cout << "Resolution at which calibrated: " << calibWidth << "x" << calibHeight << std::endl;
-    std::cout << "Default Intrinsics Matrix: " << std::endl;
-    printMatrix(defaultIntrinsics);
-
     double scaleFactor = static_cast<double>(height) / calibHeight;
     int scaledWidth = static_cast<int>(calibWidth * scaleFactor),
         scaledHeight = static_cast<int>(calibHeight * scaleFactor);
-    std::cout << "Scaling factor: " << scaleFactor << "\nScaling to: " << scaledWidth << "x" << scaledHeight << std::endl;
     auto scaledIntrinsics = calibration_data.getCameraIntrinsics(dai::CameraBoardSocket::CAM_A, scaledWidth, scaledHeight);
-    std::cout << "Scaled Intrinsics Matrix";
+
+
+    // std output
+    std::cout << "Camera: " <<  colorNode->getName() << std::endl;
+    std::cout << "Current Resolution: " << colorNode->getResolutionWidth() << "x" << colorNode->getResolutionHeight() << std::endl;
+    std::cout << "Resolution at which calibrated: " << calibWidth << "x" << calibHeight << std::endl;
+    std::cout << "Default Intrinsics Matrix: " << std::endl;
+    printMatrix(defaultIntrinsics);
+    std::cout << "Scaling factor: " << scaleFactor << "\nScaling to: " << scaledWidth << "x" << scaledHeight << std::endl;
+    std::cout << "Scaled Intrinsics Matrix" << std::endl;
     printMatrix(scaledIntrinsics);
 
-    // JSON
-    /*json info = {
-        {"tag family", tagFamily},
-        {"intrinsics", scaledIntrinsics}, // row-major
-        {"distortion coefficients", },
-        {"fps", },
-        {"resolution", }
-    };*/
 
+    // JSON output
     json info;
     info["tagFamily"] = tagFamily;
     info["intrinsics"] = scaledIntrinsics;
@@ -87,8 +79,7 @@ void captureVid(int height, std::string tagFamily) {
     info["fps"] = colorNode->getFps();
     info["resolution"] = height;
 
-    std::cout << info;
-
+    std::cout << "Info saved to" << dir << "/info.json:\n" << info.dump(4) << std::endl;
 
     // Other info about cameras on device
     /*auto features = device.getConnectedCameraFeatures();
@@ -98,11 +89,9 @@ void captureVid(int height, std::string tagFamily) {
 
 
 
-
     cv::namedWindow("Video Feed", cv::WINDOW_NORMAL);
     while (true) {
         auto cvFrame = colorQueue->get<dai::ImgFrame>()->getCvFrame(); // getCvFrame converts to BGR interleaved so explicitly setting before is not necessary
-        // std::cout << cvFrame.cols << " " << cvFrame.rows;
         cv::Mat resizedFrame;
         cv::resize(cvFrame, resizedFrame, cv::Size(), scaleFactor, scaleFactor);
         cv::imshow("Video Feed", resizedFrame);
