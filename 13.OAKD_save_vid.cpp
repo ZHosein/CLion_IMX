@@ -1,4 +1,8 @@
 #include <iostream>
+#include <fstream>
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+
 #include <depthai/depthai.hpp>
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -23,17 +27,20 @@ void printMatrix(const std::vector<std::vector<float>>& matrix) {
  * @brief Saves video feed from connected OAK-D device to driectory of .png's scaled to specified resolution
  * @param height: height to scale image to, scaling factor calculatd and applied to width
  * @param tagFamily: DICT_APRILTAG_36h11 | DICT_APRILTAG_16h5 | DICT_4X4_50 (tag families used during testing)
- * @param dir: directory in which to store images
+ * @param dir: directory in which to store images; must already exist
  */
-void captureVid(int height, const std::string& tagFamily, std::string dir) {
+void captureVid(int height, const std::string& tagFamily, const char dir[]) {
+
     // Create pipeline
     dai::Pipeline pipeline;
 
     // Define source and outputs
     const auto colorNode = pipeline.create<dai::node::ColorCamera>();
     const auto xOut = pipeline.create<dai::node::XLinkOut>();
+    auto controlIn = pipeline.create<dai::node::XLinkIn>();
 
     xOut->setStreamName("colorOut");
+    controlIn->setStreamName("control");
 
     // Properties
     colorNode->setBoardSocket(dai::CameraBoardSocket::CAM_A); // not strictly necessary to specify, would have automatically been chosen by device since there is only one color camera
@@ -43,13 +50,20 @@ void captureVid(int height, const std::string& tagFamily, std::string dir) {
 
     // Linking
     colorNode->video.link(xOut->input);
+    controlIn->out.link(colorNode->inputControl);
 
     // Connect to device and start pipeline
     dai::Device device(pipeline);
 
     // Queues
-    auto colorQueue = device.getOutputQueue("colorOut"); // set a queue limit? non-blocking?
+    auto colorQueue = device.getOutputQueue("colorOut", 1000); // set a queue limit? non-blocking?
+    auto controlQueue = device.getInputQueue("control");
 
+    // Adjust autofocus
+    /*dai::CameraControl ctrl;
+    ctrl.setAutoFocusMode(dai::CameraControl::AutoFocusMode::CONTINUOUS_PICTURE);
+    ctrl.setAutoFocusTrigger();
+    controlQueue->send(ctrl);*/
 
     // Accesing/calc camera/recording properties
     auto calibration_data = device.readCalibration();
@@ -79,7 +93,14 @@ void captureVid(int height, const std::string& tagFamily, std::string dir) {
     info["fps"] = colorNode->getFps();
     info["resolution"] = height;
 
-    std::cout << "Info saved to" << dir << "/info.json:\n" << info.dump(4) << std::endl;
+    std::cout << "Info saved to " << "info.json (move JSON file into folder " << dir << "):\n" << info.dump(4) << std::endl;
+    std::ofstream infoFile(cv::format("%s/%s/info.json", SOURCE_DIR, dir));
+    if (!infoFile.is_open()) {
+        std::cout << "could not open json file. Ensure that directory " << dir << " exists.";
+        std::cout << "Exiting...";
+        return;
+    }
+    infoFile << std::setw(4) << info;
 
     // Other info about cameras on device
     /*auto features = device.getConnectedCameraFeatures();
@@ -90,12 +111,20 @@ void captureVid(int height, const std::string& tagFamily, std::string dir) {
 
 
     cv::namedWindow("Video Feed", cv::WINDOW_NORMAL);
+    int imageNum = 0;
     while (true) {
         auto cvFrame = colorQueue->get<dai::ImgFrame>()->getCvFrame(); // getCvFrame converts to BGR interleaved so explicitly setting before is not necessary
         cv::Mat resizedFrame;
-        cv::resize(cvFrame, resizedFrame, cv::Size(), scaleFactor, scaleFactor);
-        cv::imshow("Video Feed", resizedFrame);
+        cv::resize(cvFrame, resizedFrame, cv::Size(), scaleFactor, scaleFactor, cv::INTER_AREA); // cv::INTER_AREA recommended by OpenCV docs for scaling down
 
+        cv::imshow("Video Feed", resizedFrame);
+        cv::String filename = cv::format("%s/%s/image%d.png", SOURCE_DIR, dir, imageNum);
+        if(!cv::imwrite(filename, resizedFrame)) {
+            std::cout << "Could not save image. Ensure that path: " << filename << " exists.";
+            std::cout << "Exiting...";
+            return;
+        }
+        imageNum++;
         if (const auto key = cv::waitKey(1); key == 27) return;
     }
 
