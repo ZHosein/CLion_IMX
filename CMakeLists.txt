@@ -15,6 +15,7 @@ include_directories(/usr/local/include/gtsam/3rdparty/Eigen)
 find_package(GTSAM REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(depthai CONFIG REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 include_directories(${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIR} ${GTSAM_INCLUDE_DIR})
 
@@ -32,5 +33,5 @@ set_property(TARGET TestProj PROPERTY CXX_STANDARD 17)
 target_compile_definitions(TestProj PUBLIC SOURCE_DIR="${PROJECT_SOURCE_DIR}")
 
 target_link_libraries(TestProj PRIVATE
-        ${OpenCV_LIBS} depthai::opencv rerun_sdk ${Boost_LIBRARIES} metis-gtsam gtsam gtsam_unstable
+        ${OpenCV_LIBS} depthai::opencv rerun_sdk ${Boost_LIBRARIES} metis-gtsam gtsam gtsam_unstable nlohmann_json::nlohmann_json
 )

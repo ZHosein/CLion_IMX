@@ -13,7 +13,7 @@
 
 int main() {
     // logImagePoseRerun();
-    captureVid(720);
+    captureVid(720, "DICT_APRILTAG_36h11");
     // printCameraIntrinsics();
 
     std::cout << "Hello World";

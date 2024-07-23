@@ -1,6 +1,7 @@
 #include <iostream>
 #include <depthai/depthai.hpp>
-// #include <>
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 /**
  * Helper function for printing matrices; found on depthAI API docs
@@ -22,8 +23,9 @@ void printMatrix(const std::vector<std::vector<float>>& matrix) {
  * Saves video feed from connected OAK-D device to driectory of .png's scaled to specified resolution
  * @param height: height to scale image to, scaling factor calculatd and applied to width
  * @param dir: directory in which to store images
+ * @param tagFamily: DICT_APRILTAG_36h11 | DICT_APRILTAG_16h5 | DICT_4X4_50 (tag families used during testing)
  */
-void captureVid(int height) {
+void captureVid(int height, std::string tagFamily) {
     // Create pipeline
     dai::Pipeline pipeline;
 
@@ -50,7 +52,7 @@ void captureVid(int height) {
     // auto colorQueue = device.getOutputQueue("colorOut", 1);
 
 
-    // Outputs
+    // stdout Outputs
     std::cout << "Camera: " <<  colorNode->getName() << std::endl;
     std::cout << "Current Resolution: " << colorNode->getResolutionWidth() << "x" << colorNode->getResolutionHeight() << std::endl;
     std::cout << "Fps: " << colorNode->getFps() << std::endl;
@@ -62,6 +64,12 @@ void captureVid(int height) {
     std::cout << "Default Intrinsics Matrix: " << std::endl;
     printMatrix(defaultIntrinsics);
 
+    json deviceEEPROM = calibration_data.eepromToJson();
+    auto ints = deviceEEPROM["/cameraData/2/1/intrinsicMatrix"_json_pointer];
+    std::cout << ints << std::endl;
+    printMatrix(ints);
+    std::cout << deviceEEPROM["/cameraData/2"_json_pointer] << std::endl; // assumes 3 cameras and that the color camer is the last in the list
+    std::cout << deviceEEPROM << std::endl;
     double scaleFactor = static_cast<double>(height) / calibHeight;
     int scaledWidth = static_cast<int>(calibWidth * scaleFactor),
         scaledHeight = static_cast<int>(calibHeight * scaleFactor);
@@ -70,6 +78,23 @@ void captureVid(int height) {
     std::cout << "Scaled Intrinsics Matrix";
     printMatrix(scaledIntrinsics);
 
+    // JSON
+    /*json info = {
+        {"tag family", tagFamily},
+        {"intrinsics", scaledIntrinsics}, // row-major
+        {"distortion coefficients", },
+        {"fps", },
+        {"resolution", }
+    };*/
+
+    json info;
+    info["tagFamily"] = tagFamily;
+    info["intrinsics"] = scaledIntrinsics;
+    info["distCoeffs"] = calibration_data.getDistortionCoefficients(dai::CameraBoardSocket::CAM_A);
+    info["fps"] = colorNode->getFps();
+    info["resolution"] = height;
+
+    std::cout << info;
 
 
     // Other info about cameras on device
