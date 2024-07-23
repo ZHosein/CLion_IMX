@@ -58,18 +58,11 @@ void captureVid(int height, std::string tagFamily) {
     std::cout << "Fps: " << colorNode->getFps() << std::endl;
 
     auto calibration_data = device.readCalibration();
-    // calibration_data.eepromToJsonFile("/home/zakareeyah/CLionProjects/TestProj/calibData.json"); //
     auto [defaultIntrinsics, calibWidth, calibHeight] = calibration_data.getDefaultIntrinsics(dai::CameraBoardSocket::CAM_A);
     std::cout << "Resolution at which calibrated: " << calibWidth << "x" << calibHeight << std::endl;
     std::cout << "Default Intrinsics Matrix: " << std::endl;
     printMatrix(defaultIntrinsics);
 
-    json deviceEEPROM = calibration_data.eepromToJson();
-    auto ints = deviceEEPROM["/cameraData/2/1/intrinsicMatrix"_json_pointer];
-    std::cout << ints << std::endl;
-    printMatrix(ints);
-    std::cout << deviceEEPROM["/cameraData/2"_json_pointer] << std::endl; // assumes 3 cameras and that the color camer is the last in the list
-    std::cout << deviceEEPROM << std::endl;
     double scaleFactor = static_cast<double>(height) / calibHeight;
     int scaledWidth = static_cast<int>(calibWidth * scaleFactor),
         scaledHeight = static_cast<int>(calibHeight * scaleFactor);
