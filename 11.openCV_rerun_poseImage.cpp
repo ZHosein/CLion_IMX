@@ -45,7 +45,7 @@ void logImagePoseRerun () {
     // log results
     cv::cvtColor(image, image, cv::COLOR_BGR2RGB);     // Rerun expects RGB format
 
-    const auto rec = rerun::RecordingStream("Image pose7");
+    const auto rec = rerun::RecordingStream("OpenCV4.9");
     rec.spawn().exit_on_failure();
     rec.log_static("/", rerun::ViewCoordinates::RIGHT_HAND_Y_DOWN);
 

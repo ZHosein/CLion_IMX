@@ -37,10 +37,10 @@ void captureVid(int height, const std::string& tagFamily, const char dir[]) {
     // Define source and outputs
     const auto colorNode = pipeline.create<dai::node::ColorCamera>();
     const auto xOut = pipeline.create<dai::node::XLinkOut>();
-    auto controlIn = pipeline.create<dai::node::XLinkIn>();
+    auto controlIn = pipeline.create<dai::node::XLinkIn>(); // af (fr adjstng autofcs)
 
     xOut->setStreamName("colorOut");
-    controlIn->setStreamName("control");
+    controlIn->setStreamName("control"); // af
 
     // Properties
     colorNode->setBoardSocket(dai::CameraBoardSocket::CAM_A); // not strictly necessary to specify, would have automatically been chosen by device since there is only one color camera
@@ -50,14 +50,14 @@ void captureVid(int height, const std::string& tagFamily, const char dir[]) {
 
     // Linking
     colorNode->video.link(xOut->input);
-    controlIn->out.link(colorNode->inputControl);
+    controlIn->out.link(colorNode->inputControl); // af
 
     // Connect to device and start pipeline
     dai::Device device(pipeline);
 
     // Queues
     auto colorQueue = device.getOutputQueue("colorOut", 1000); // set a queue limit? non-blocking?
-    auto controlQueue = device.getInputQueue("control");
+    auto controlQueue = device.getInputQueue("control"); // af
 
     // Adjust autofocus
     /*dai::CameraControl ctrl;
