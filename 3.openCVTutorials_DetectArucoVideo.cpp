@@ -1,19 +1,23 @@
 #include <iostream>
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/ximgproc.hpp>
 #include <opencv2/objdetect/aruco_detector.hpp>
+#include <opencv2/calib3d.hpp>
 
 
 /**
  * draw detected markers from video feed from default laptop camera
  */
 void detectMarker_Video(){
-    cv::aruco::ArucoDetector detector(aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50), cv::aruco::DetectorParameters());
+    cv::aruco::ArucoDetector detector(cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50), cv::aruco::DetectorParameters());
 
     cv::VideoCapture inputVideo;
-    inputVideo.open(0); // open default camera
+    inputVideo.open(1); // open default camera
 
 
     while (inputVideo.grab()) {
-        Mat image, imageCopy;
+        cv::Mat image, imageCopy;
         inputVideo.retrieve(image);
 
 
@@ -27,10 +31,10 @@ void detectMarker_Video(){
         //draw detected markers
         image.copyTo(imageCopy);
         if (!ids.empty())
-            aruco::drawDetectedMarkers(imageCopy, corners, ids);
+            cv::aruco::drawDetectedMarkers(imageCopy, corners, ids);
 
         imshow("out", imageCopy);
 
-        if (char key = (char)waitKey(10); key == 27) break;
+        if (char key = (char)cv::waitKey(10); key == 27) break;
     }
 }

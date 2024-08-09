@@ -50,6 +50,7 @@ void captureVid(int height, const std::string& tagFamily, const char dir[]) {
 
     // Linking
     colorNode->video.link(xOut->input);
+    //colorNode->preview.link(xOut->input);
     controlIn->out.link(colorNode->inputControl); // af
 
     // Connect to device and start pipeline

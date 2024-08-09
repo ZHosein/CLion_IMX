@@ -38,10 +38,22 @@ void printCameraIntrinsics() {
 
     auto disCoeff = calibData.getDistortionCoefficients(dai::CameraBoardSocket::CAM_A);
 
+    auto disCoeffB = calibData.getDistortionCoefficients(dai::CameraBoardSocket::CAM_B);
+
+    auto disCoeffC = calibData.getDistortionCoefficients(dai::CameraBoardSocket::CAM_C);
+
     std::string coeffString = "[";
     for(const auto& coeff : disCoeff) coeffString += std::to_string(coeff) + ", ";
     coeffString = coeffString.substr(0, coeffString.size() - 2) + "]\n";
     std::cout << coeffString;
+    std::string coeffStringB = "[";
+    for(const auto& coeff : disCoeff) coeffStringB += std::to_string(coeff) + ", ";
+    coeffStringB = coeffStringB.substr(0, coeffStringB.size() - 2) + "]\n";
+    std::cout << coeffStringB;
+    std::string coeffStringC = "[";
+    for(const auto& coeff : disCoeff) coeffStringC += std::to_string(coeff) + ", ";
+    coeffStringC = coeffStringC.substr(0, coeffStringC.size() - 2) + "]\n";
+    std::cout << coeffStringC;
 
 
 

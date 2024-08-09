@@ -3,11 +3,11 @@
 /*
  * Inrinsics Matrix:
  *
- *      f_x   0    c_x
- *      0     f_y  c_y
- *      0     0    1
- *
- * ``f_x and f_y are essentially the focal length epxressed in pixels.
+     *      f_x   0    c_x
+     *      0     f_y  c_y
+     *      0     0    1
+     *
+ * ``f_x and f_y ar    e essentially the focal length epxressed in pixels.
  * (We introduce 2 new params because each pixel on a typical image is rectangluar,
  *      hence the pixle lengths in x and y are different
  *      [the physical focal length f, expressed in millimeters, cannot be measured directly]

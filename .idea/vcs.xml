@@ -5,5 +5,8 @@
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/arrow/src/arrow_cpp" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/arrow/src/arrow_cpp/cpp/submodules/parquet-testing" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/arrow/src/arrow_cpp/testing" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/depthai" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/depthai/depthai_calibration" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/depthai/resources/depthai_boards" vcs="Git" />
   </component>
 </project>

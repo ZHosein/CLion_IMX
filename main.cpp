@@ -11,10 +11,21 @@
 
 // #include "11.openCV_rerun_poseImage.cpp"
 
+// #include "3.openCVTutorials_DetectArucoVideo.cpp"
+#include "4.depthAITutorial_DispLeftAndRight.cpp"
+// #include "5.depthAITutorial_GetIntrinsics.cpp"
+
 int main() {
     // logImagePoseRerun();
-    captureVid(720, "DICT_APRILTAG_36h11", "recordTest1");
+   //captureVid(720, "DICT_APRILTAG_36h11", "vid_APRILTAG_36h11_720p");
+   // captureVid(720, "DICT_APRILTAG_36h11", "roomMap2");
+    // captureVid(480, "DICT_APRILTAG_36h11", "vid_APRILTAG_36h11_480p_hello");
     // printCameraIntrinsics();
+
+    display_vid_sample();
+    // printCameraIntrinsics();
+  // detectMarker_Video();
+
 
     std::cout << "Hello World";
     return 0;

@@ -86,8 +86,13 @@ void display_vid_sample () {
     auto xlinkOut = pipeline.create<dai::node::XLinkOut>();
 
     xlinkOut->setStreamName("preview");
-    colorCam->setInterleaved(true);
-    colorCam->preview.link(xlinkOut->input);
+
+    colorCam->setBoardSocket(dai::CameraBoardSocket::CAM_A); // not strictly necessary to specify, would have automatically been chosen by device since there is only one color camera
+    // colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_4_K); // resolution for which default inrinsics was calibrated (getDefaultIntrinsics())
+    colorCam->setInterleaved(true); // not sure if really necessary
+    // colorCam->setColorOrder(dai::ColorCameraProperties::ColorOrder::BGR); // defualt color order is RGB but openCV uses BGR
+    // colorCam->preview.link(xlinkOut->input);
+    colorCam->video.link(xlinkOut->input);
 
     try {
         dai::Device device(pipeline);
@@ -104,7 +109,8 @@ void display_vid_sample () {
             std::vector<int> ids;
             std::vector<std::vector<cv::Point2f>> corners, rejected;
 
-            cv::aruco::ArucoDetector detector(cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50));
+            // cv::aruco::ArucoDetector detector(cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50));
+            cv::aruco::ArucoDetector detector(cv::aruco::getPredefinedDictionary(cv::aruco::DICT_APRILTAG_36h11));
 
             detector.detectMarkers(openCVFrame, corners, ids);
             if(!ids.empty())

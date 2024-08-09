@@ -20,10 +20,15 @@ void logImagePoseRerun () {
     // create obj coordinate system
     // constexpr float markerLength = 0.15;
     cv::Mat objPoints(4, 1, CV_32FC3);
-    objPoints.ptr<cv::Vec3f>(0)[0] = cv::Vec3f(-markerLength/2.f, markerLength/2.f, 0);
+    /*objPoints.ptr<cv::Vec3f>(0)[0] = cv::Vec3f(-markerLength/2.f, markerLength/2.f, 0);
     objPoints.ptr<cv::Vec3f>(0)[1] = cv::Vec3f(markerLength/2.f, markerLength/2.f, 0);
     objPoints.ptr<cv::Vec3f>(0)[2] = cv::Vec3f(markerLength/2.f, -markerLength/2.f, 0);
-    objPoints.ptr<cv::Vec3f>(0)[3] = cv::Vec3f(-markerLength/2.f, -markerLength/2.f, 0);
+    objPoints.ptr<cv::Vec3f>(0)[3] = cv::Vec3f(-markerLength/2.f, -markerLength/2.f, 0);*/
+    // x down, y across, z up (to facilitate placing world in corner)
+    objPoints.ptr<cv::Vec3f>(0)[0] = cv::Vec3f(0,0, 0); // top left
+    objPoints.ptr<cv::Vec3f>(0)[1] = cv::Vec3f(0, markerLength, 0); // top right
+    objPoints.ptr<cv::Vec3f>(0)[2] = cv::Vec3f(markerLength, markerLength, 0); // bottom right
+    objPoints.ptr<cv::Vec3f>(0)[3] = cv::Vec3f(markerLength, 0, 0); // bottom left
 
     // detect markers and estimate pose
     std::vector<int> ids; std::vector<std::vector<cv::Point2f>> corners; detector.detectMarkers(image, corners, ids);
